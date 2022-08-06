@@ -1,27 +1,26 @@
 package main
 
 import (
-	"fmt"
-	"log"
-	"os/exec"
-	"strings"
+	"io"
+	"os"
+
 	"github.com/KPWithCode/imgBlur/primitive"
-	
 )
 
 func main() {
-	cmd := exec.Command("primitive", strings.Fields("-i martin2.png -o 1on1.png -n 100 -m 6")...)
-	b, err := cmd.CombinedOutput()
+	inFile, err := os.Open("tmp/jump.png")
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
-	fmt.Println(string(b))
+	defer inFile.Close()
+	out, err := primitive.Transform(inFile, 33)
+	if err != nil {
+		panic(err)
+	}
+	os.Remove("out.png")
+	outFile, err := os.Create("out.png")
+	if err != nil {
+		panic(err)
+	}
+	io.Copy(outFile, out)
 }
-type PrimitiveMode 
-
-const (
-	0=combo, 1=triangle, 2=rect, 3=ellipse, 4=circle, 5=rotatedrect, 6=beziers, 7=rotatedellipse, 8=polygon
-
-)
-
-func primitive(inputFile,outputFile string, numShapes int, mode int) 
